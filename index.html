@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Systemd Timer to Cron Converter — OnCalendar ↔ Crontab</title>
+  <meta name="description" content="Convert systemd timer OnCalendar= expressions to crontab and back. Live systemd timer to cron converter with plain-English explanations, presets, and quirk notes.">
+  <meta name="keywords" content="systemd timer to cron, OnCalendar to crontab, cron to systemd OnCalendar, crontab guru systemd, systemd.time calendar">
+  <meta name="theme-color" content="#0e141b" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f3efe6" media="(prefers-color-scheme: light)">
+  <meta property="og:title" content="Systemd Timer to Cron Converter">
+  <meta property="og:description" content="Bidirectional OnCalendar ↔ crontab translator that runs entirely in your browser.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Systemd Timer to Cron Converter",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Convert systemd timer OnCalendar= syntax to 5-field crontab expressions and back, with live conversion and plain-English explanations."
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#converter">Skip to converter</a>
+
+  <header class="site-header">
+    <div class="header-row">
+      <p class="brand"><span aria-hidden="true">⏱</span> croncal</p>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">Theme</button>
+    </div>
+    <h1>Systemd Timer to Cron Converter</h1>
+    <p class="lede">
+      Translate <strong>OnCalendar=</strong> calendar events and 5-field crontab both ways.
+      Live, in the browser — no server, no Crontab Guru blind spot for systemd.
+    </p>
+  </header>
+
+  <main id="converter">
+    <section class="presets" aria-labelledby="presets-heading">
+      <h2 id="presets-heading" class="visually-hidden">Example schedules</h2>
+      <div class="preset-row" id="preset-row"></div>
+    </section>
+
+    <section class="panels" aria-label="Bidirectional converter">
+      <article class="panel" data-side="cron">
+        <header class="panel-head">
+          <div>
+            <h2 id="cron-label">Cron</h2>
+            <p class="panel-sub">5 fields: minute hour day-of-month month day-of-week</p>
+          </div>
+          <button type="button" class="copy-btn" data-copy="cron" aria-describedby="cron-label">Copy</button>
+        </header>
+        <label class="visually-hidden" for="cron-input">Cron expression</label>
+        <textarea id="cron-input" class="expr" spellcheck="false" autocapitalize="off" autocomplete="off" rows="4" placeholder="0 4 * * *"></textarea>
+        <p class="panel-status" id="cron-status" role="status"></p>
+      </article>
+
+      <div class="swap-col" aria-hidden="true">
+        <span class="swap-glyph">⇄</span>
+      </div>
+
+      <article class="panel" data-side="calendar">
+        <header class="panel-head">
+          <div>
+            <h2 id="cal-label">systemd OnCalendar=</h2>
+            <p class="panel-sub">Weekday Year-Month-Day Hour:Minute:Second</p>
+          </div>
+          <button type="button" class="copy-btn" data-copy="calendar" aria-describedby="cal-label">Copy</button>
+        </header>
+        <label class="visually-hidden" for="cal-input">systemd OnCalendar expression</label>
+        <textarea id="cal-input" class="expr" spellcheck="false" autocapitalize="off" autocomplete="off" rows="4" placeholder="*-*-* 04:00:00"></textarea>
+        <p class="panel-status" id="cal-status" role="status"></p>
+      </article>
+    </section>
+
+    <section class="explain" aria-labelledby="explain-heading">
+      <h2 id="explain-heading">In plain English</h2>
+      <p id="explanation" class="explain-body">Type a cron expression or an OnCalendar= value to see the translation.</p>
+      <ul id="messages" class="messages" aria-live="polite"></ul>
+    </section>
+
+    <section class="quirks" aria-labelledby="quirks-heading">
+      <h2 id="quirks-heading">Quirk notes (read these)</h2>
+      <dl>
+        <dt>Day-of-week numbering</dt>
+        <dd>
+          Cron uses <code>0</code> and <code>7</code> for Sunday, <code>1</code> = Monday …
+          <code>6</code> = Saturday. systemd uses English names (<code>Mon</code>…<code>Sun</code>),
+          and the <code>weekly</code> shortcut is <strong>Monday</strong> 00:00 — while cron
+          <code>@weekly</code> is <strong>Sunday</strong> 00:00.
+        </dd>
+        <dt>Ranges and steps</dt>
+        <dd>
+          Cron ranges use a hyphen (<code>1-5</code>, <code>*/15</code>, <code>1-10/2</code>).
+          systemd ranges use <code>..</code> (<code>Mon..Fri</code>, <code>01..07</code>) and
+          steps as a suffix (<code>00/15</code>, <code>1/2</code>). Star-plus-step in systemd
+          is written from the start value, e.g. <code>*:00/15</code> not <code>*/15</code>.
+        </dd>
+        <dt>Day-of-month AND/OR</dt>
+        <dd>
+          When both day-of-month and day-of-week are restricted, <strong>Vixie cron ORs</strong>
+          them (<code>30 4 1,15 * 5</code> = the 1st, the 15th, <em>and also every Friday</em>).
+          systemd <strong>ANDs</strong> weekday and date in one OnCalendar= (<code>Fri *-*-01,15</code>
+          only on Fridays that are the 1st or 15th). Multiple <code>OnCalendar=</code> lines in one
+          timer unit are OR’d — that is the correct mapping for cron’s OR.
+        </dd>
+        <dt>No cron equivalent</dt>
+        <dd>
+          systemd calendar events can include <strong>seconds</strong>, a <strong>year</strong>,
+          a <strong>timezone</strong>, and last-day-of-month with <code>~</code>
+          (<code>*-02~03</code> = third-last day of February). Standard 5-field cron cannot
+          express those. Timezones belong in <code>CRON_TZ=</code>, not in the five fields.
+        </dd>
+        <dt>Unsupported on purpose</dt>
+        <dd>
+          This tool does not invent mappings for Quartz <code>L</code>/<code>W</code>/<code>#</code>,
+          6-field “seconds or year” crons, <code>@reboot</code> (use <code>OnBootSec=</code>),
+          monotonic timers (<code>OnUnitActiveSec=</code>), or exotic fractional-second repeats.
+        </dd>
+      </dl>
+    </section>
+
+    <!--
+      FUTURE AD / AFFILIATE SLOT
+      Insert a sponsored unit or affiliate block here later.
+      Suggested sizes: 728×90 desktop, 320×50 mobile.
+      Do not load a real ad network until a provider is wired up.
+    -->
+    <aside class="ad-placeholder" data-ad-slot="reserved" aria-label="Reserved advertisement slot">
+      <span>Reserved for a future ad or affiliate unit</span>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      Runs entirely in your browser. Conversion follows
+      <a href="https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html">systemd.time(7)</a>
+      and <a href="https://man7.org/linux/man-pages/man5/crontab.5.html">crontab(5)</a>.
+      Open locally by serving this folder or opening <code>index.html</code>.
+    </p>
+  </footer>
+
+  <script src="converter.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
