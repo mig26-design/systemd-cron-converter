@@ -32,11 +32,32 @@ Conversion unit tests (Node, no extra packages):
 node tests.js
 ```
 
+## Utilities hub (`output/`)
+
+`build_utilities.py` is a zero-dependency Python 3 generator (stdlib only). It writes a second static site into `output/` — a hub plus 20 client-side tools — **without modifying** the flagship converter files at the repo root.
+
+```bash
+python3 build_utilities.py
+python3 -m http.server 8080 --directory output
+# then visit http://localhost:8080
+```
+
+Each tool lives at `output/{slug}/index.html` (clean URL `/{slug}`). Canonical URLs are `https://cron2systemd.dev/{slug}` with no trailing slash. The hub is `output/index.html` → `https://cron2systemd.dev/`.
+
+The original OnCalendar ↔ crontab converter is copied to `output/oncalendar-cron-converter/` so you can point a host at `output/` without dropping the flagship tool. See `OUTPUT.md` for the file map.
+
+Shared assets (`output/assets/site.css`, `output/assets/app.js`, per-tool JS) load from this repo only: no npm, no CDNs, no Google Fonts (system stacks: Inter / JetBrains Mono).
+
 ## Deploy
 
-This is a plain static site. Point a static host at the repository root (or upload these files). There is no `npm run build`.
+Two artifact roots exist on purpose:
 
-### Cloudflare Pages
+| What you want live at `/` | Artifact | Notes |
+| --- | --- | --- |
+| Flagship OnCalendar ↔ crontab converter only | repository root (`.`) | Current layout; no build step |
+| Utilities hub + 20 tools + copied converter | `output/` | Run the generator first (or as the Pages build command) |
+
+### Cloudflare Pages — converter only (repo root)
 
 1. Push this repo to GitHub/GitLab.
 2. In Cloudflare Pages → **Create a project** → connect the repo.
@@ -46,13 +67,22 @@ This is a plain static site. Point a static host at the repository root (or uplo
    - **Build output directory:** `/` (or `.`)
 4. Deploy. Every push to the production branch republishes.
 
+### Cloudflare Pages — utilities hub (`output/`)
+
+1. Connect the same repo.
+2. Build settings:
+   - **Framework preset:** None
+   - **Build command:** `python3 build_utilities.py`
+   - **Build output directory:** `output`
+3. Deploy. `/` becomes the hub; `/oncalendar-cron-converter` is the original dual converter; each utility is `/{slug}`.
+
+Alternatively run `python3 build_utilities.py` locally and either upload the `output/` folder or copy its contents to your static host. Do not copy `output/` over the repo root unless you intend to replace `index.html` with the hub.
+
 ### Vercel
 
-1. Import the repo in Vercel.
-2. **Framework Preset:** Other
-3. **Build Command:** leave empty
-4. **Output Directory:** `.`
-5. Deploy.
+**Converter only:** Framework Preset Other, empty build command, output directory `.`
+
+**Utilities hub:** Build Command `python3 build_utilities.py`, Output Directory `output`.
 
 You can also drag-and-drop the folder onto [Cloudflare Pages](https://pages.cloudflare.com/) or [Vercel](https://vercel.com/) without git.
 
