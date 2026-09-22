@@ -34,7 +34,7 @@ node tests.js
 
 ## Utilities hub (`output/`)
 
-`build_utilities.py` is a zero-dependency Python 3 generator (stdlib only). It writes a second static site into `output/` — a hub plus 24 client-side tools — **without modifying** the flagship converter files at the repo root.
+`build_utilities.py` is a zero-dependency Python 3 generator (stdlib only). It writes a second static site into `output/` — a hub plus 20 client-side tools — **without modifying** the flagship converter files at the repo root.
 
 ```bash
 python3 build_utilities.py
@@ -48,6 +48,26 @@ The original OnCalendar ↔ crontab converter is copied to `output/oncalendar-cr
 
 Shared assets (`output/assets/site.css`, `output/assets/app.js`, per-tool JS) load from this repo only: no npm, no CDNs, no Google Fonts (system stacks: Inter / JetBrains Mono).
 
+## Mini-sites (`sites/`)
+
+Four separate static sites live next to the DevOps hub. They are not extra paths on `cron2systemd.dev`.
+
+| Folder | Production host |
+| --- | --- |
+| `sites/mint` | `https://mint.cron2systemd.dev` |
+| `sites/safe` | `https://safe.cron2systemd.dev` |
+| `sites/x402` | `https://x402.cron2systemd.dev` |
+| `sites/bot` | `https://bot.cron2systemd.dev` |
+
+```bash
+python3 sites/mint/build.py
+python3 sites/safe/build.py
+python3 sites/x402/build.py
+python3 sites/bot/build.py
+```
+
+Each command writes `sites/<name>/output`. Cloudflare Pages setup (four projects, or four production branches) is in `sites/README.md`.
+
 ## Deploy
 
 Two artifact roots exist on purpose:
@@ -55,7 +75,7 @@ Two artifact roots exist on purpose:
 | What you want live at `/` | Artifact | Notes |
 | --- | --- | --- |
 | Flagship OnCalendar ↔ crontab converter only | repository root (`.`) | Current layout; no build step |
-| Utilities hub + 24 tools + copied converter | `output/` | Run the generator first (or as the Pages build command) |
+| Utilities hub + 20 tools + copied converter | `output/` | Run the generator first (or as the Pages build command) |
 
 ### Cloudflare Pages — converter only (repo root)
 
