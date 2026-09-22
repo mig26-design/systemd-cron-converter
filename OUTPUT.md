@@ -19,7 +19,7 @@ python3 -m http.server 8080 --directory output
 | Path | URL (`https://cron2systemd.dev`) |
 | --- | --- |
 | `output/index.html` | `/` (hub listing all tools) |
-| `output/{slug}/index.html` | `/{slug}` (20 utilities) |
+| `output/{slug}/index.html` | `/{slug}` (24 utilities) |
 | `output/oncalendar-cron-converter/index.html` | `/oncalendar-cron-converter` (copied flagship converter) |
 | `output/sitemap.xml` | `/sitemap.xml` |
 | `output/robots.txt` | `/robots.txt` (`Sitemap: https://cron2systemd.dev/sitemap.xml`) |
@@ -58,3 +58,7 @@ The repository root remains the original converter so an existing Pages project 
 18. iptables-rule-builder
 19. uuid-v4-generator
 20. regex-cheatsheet-tester
+21. solana-mint-check
+22. safe-mech-decode
+23. x402-inspect
+24. discord-bot-offline

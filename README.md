@@ -34,7 +34,7 @@ node tests.js
 
 ## Utilities hub (`output/`)
 
-`build_utilities.py` is a zero-dependency Python 3 generator (stdlib only). It writes a second static site into `output/` — a hub plus 20 client-side tools — **without modifying** the flagship converter files at the repo root.
+`build_utilities.py` is a zero-dependency Python 3 generator (stdlib only). It writes a second static site into `output/` — a hub plus 24 client-side tools — **without modifying** the flagship converter files at the repo root.
 
 ```bash
 python3 build_utilities.py
@@ -55,7 +55,7 @@ Two artifact roots exist on purpose:
 | What you want live at `/` | Artifact | Notes |
 | --- | --- | --- |
 | Flagship OnCalendar ↔ crontab converter only | repository root (`.`) | Current layout; no build step |
-| Utilities hub + 20 tools + copied converter | `output/` | Run the generator first (or as the Pages build command) |
+| Utilities hub + 24 tools + copied converter | `output/` | Run the generator first (or as the Pages build command) |
 
 ### Cloudflare Pages — converter only (repo root)
 
